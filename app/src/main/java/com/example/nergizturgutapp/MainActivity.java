@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showList() {
-        //TODO Afficher liste;
+        //TODO Afficher list;
     }
 
     @Override
