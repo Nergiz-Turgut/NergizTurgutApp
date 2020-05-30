@@ -1,5 +1,7 @@
 package com.example.nergizturgutapp;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.google.gson.Gson;
@@ -26,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
     private ListAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private static final String BASE_URL = "https://api.printful.com";
+    private SharedPreferences sharedPreferences;
+    private Gson gson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -33,6 +37,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        sharedPreferences = getSharedPreferences("application.esiea", Context.MODE_PRIVATE);
+
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
 
         makeApiCall();
 
@@ -53,9 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void makeApiCall() {
-        Gson gson = new GsonBuilder()
-                .setLenient()
-                .create();
+
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -66,13 +73,25 @@ public class MainActivity extends AppCompatActivity {
 
         Call<RestCountryResponse> call = countryApi.getCountryResponse();
         call.enqueue(new Callback<RestCountryResponse>() {
+
                 @Override
             public void onResponse(Call<RestCountryResponse> call, Response<RestCountryResponse> response) {
                 if(response.isSuccessful() && response.body() !=null){
                     List<Country> countryList = response.body().getResults();
+                    saveList(countryList);
                     showList(countryList);
                 }else showError();
 
+            }
+
+            private void saveList(List<Country> countryList) {
+                    String jsonString = gson.toJson(countryList);
+                sharedPreferences
+                        .edit()
+                        .putString("jsonCountryList", "jsonString")
+                        .apply();
+
+                Toast.makeText(getApplicationContext(), "List sauvegardée", Toast.LENGTH_SHORT).show();
             }
 
             @Override
