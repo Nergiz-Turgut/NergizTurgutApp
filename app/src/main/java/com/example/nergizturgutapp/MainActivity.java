@@ -2,19 +2,14 @@ package com.example.nergizturgutapp;
 
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,13 +36,6 @@ public class MainActivity extends AppCompatActivity {
         showList ();
         makeApiCall();
 
-        List<String> input = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            input.add("Test" + i);
-        }
-
-        mAdapter = new ListAdapter(input);
-        recyclerView.setAdapter(mAdapter);
 
     }
 
@@ -56,6 +44,15 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
+
+        List<String> input = new ArrayList<>();
+        for (int i = 0; i < 100; i++) {
+            input.add("Test" + i);
+        }
+
+        mAdapter = new ListAdapter(input);
+        recyclerView.setAdapter(mAdapter);
+
     }
 
 
@@ -76,18 +73,24 @@ public class MainActivity extends AppCompatActivity {
         call.enqueue(new Callback<RestPokemonResponse>() {
             @Override
             public void onResponse(Call<RestPokemonResponse> call, Response<RestPokemonResponse> response) {
+                if(response.isSuccessful() && response.body() !=null){
+                    List<Pokemon> pokemonList = response.body().getResults();
+                    Toast.makeText(getApplicationContext(), "API Success", Toast.LENGTH_SHORT).show();
+                }else showError();
 
             }
 
             @Override
             public void onFailure(Call<RestPokemonResponse> call, Throwable t) {
-
+                showError();
             }
         });
 
     }
 
-
+    private void showError() {
+        Toast.makeText(getApplicationContext(), "API Error", Toast.LENGTH_SHORT).show();
+    }
 
 
 }
