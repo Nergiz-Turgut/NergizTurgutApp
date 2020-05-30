@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ListAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
-    private static final String BASE_URL = "https://api.printful.com/"; // Appel à l'API
+    private static final String BASE_URL = "https://api.printful.com";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -33,24 +33,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        showList ();
+
         makeApiCall();
 
 
     }
 
-    private void showList() {
+    private void showList(List<Country>countryList) {
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        List<String> input = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            input.add("Test" + i);
-        }
-
-        mAdapter = new ListAdapter(input);
+        mAdapter = new ListAdapter(countryList);
         recyclerView.setAdapter(mAdapter);
 
     }
@@ -75,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<RestCountryResponse> call, Response<RestCountryResponse> response) {
                 if(response.isSuccessful() && response.body() !=null){
                     List<Country> countryList = response.body().getResults();
-                    Toast.makeText(getApplicationContext(), "API Success", Toast.LENGTH_SHORT).show();
+                    showList(countryList);
                 }else showError();
 
             }
