@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.widget.Toast;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ListAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
-    private static final String BASE_URL = "https://api.printful.com";
+    private static final String BASE_URL = "https://pokeapi.co//";
     private SharedPreferences sharedPreferences;
     private Gson gson;
 
@@ -43,18 +45,37 @@ public class MainActivity extends AppCompatActivity {
                 .setLenient()
                 .create();
 
-        makeApiCall();
+        List<Pokemon> pokemonList = getDataFromCache();
+
+        if(pokemonList != null){
+            showList(pokemonList);
+        }else makeApiCall();
 
 
     }
 
-    private void showList(List<Country>countryList) {
+    private List<Pokemon> getDataFromCache() {
+       String jsonPokemon =  sharedPreferences.getString("jsonPokemonList", null);
+
+       if(jsonPokemon == null){
+           return null;
+       }else{
+           Type listeType = new TypeToken<List<Pokemon>>(){}.getType();
+           return gson.fromJson(jsonPokemon, listeType);
+       }
+
+
+
+
+    }
+
+    private void showList(List<Pokemon>pokemonList) {
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        mAdapter = new ListAdapter(countryList);
+        mAdapter = new ListAdapter(pokemonList);
         recyclerView.setAdapter(mAdapter);
 
     }
@@ -69,33 +90,34 @@ public class MainActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
-        CountryAPI countryApi = retrofit.create(CountryAPI.class);
+        PokeApi pokeApi = retrofit.create(PokeApi.class);
 
-        Call<RestCountryResponse> call = countryApi.getCountryResponse();
-        call.enqueue(new Callback<RestCountryResponse>() {
+        Call<RestPokemonResponse> call = pokeApi.getPokemonResponse();
+        call.enqueue(new Callback<RestPokemonResponse>() {
 
                 @Override
-            public void onResponse(Call<RestCountryResponse> call, Response<RestCountryResponse> response) {
+            public void onResponse(Call<RestPokemonResponse> call, Response<RestPokemonResponse> response) {
                 if(response.isSuccessful() && response.body() !=null){
-                    List<Country> countryList = response.body().getResults();
-                    saveList(countryList);
-                    showList(countryList);
+                    List<Pokemon> pokemonList = response.body().getResults();
+                    saveList(pokemonList);
+                    showList(pokemonList);
                 }else showError();
 
             }
 
-            private void saveList(List<Country> countryList) {
-                    String jsonString = gson.toJson(countryList);
+            private void saveList(List<Pokemon> pokemonList) {
+                    String jsonString = gson.toJson(pokemonList);
+
                 sharedPreferences
                         .edit()
-                        .putString("jsonCountryList", "jsonString")
+                        .putString("jsonPokemonList", "jsonString")
                         .apply();
 
                 Toast.makeText(getApplicationContext(), "List sauvegardée", Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onFailure(Call<RestCountryResponse> call, Throwable t) {
+            public void onFailure(Call<RestPokemonResponse> call, Throwable t) {
                 showError();
             }
         });
