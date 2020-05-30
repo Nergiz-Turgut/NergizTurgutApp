@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ListAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
-    private static final String BASE_URL = "https://pokeapi.co/"; // Appel à l'API
+    private static final String BASE_URL = "https://api.printful.com/"; // Appel à l'API
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -67,21 +67,21 @@ public class MainActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
-        PokeApi pokeApi = retrofit.create(PokeApi.class);
+        CountryAPI countryApi = retrofit.create(CountryAPI.class);
 
-        Call<RestPokemonResponse> call = pokeApi.getPokemonResponse();
-        call.enqueue(new Callback<RestPokemonResponse>() {
-            @Override
-            public void onResponse(Call<RestPokemonResponse> call, Response<RestPokemonResponse> response) {
+        Call<RestCountryResponse> call = countryApi.getCountryResponse();
+        call.enqueue(new Callback<RestCountryResponse>() {
+                @Override
+            public void onResponse(Call<RestCountryResponse> call, Response<RestCountryResponse> response) {
                 if(response.isSuccessful() && response.body() !=null){
-                    List<Pokemon> pokemonList = response.body().getResults();
+                    List<Country> countryList = response.body().getResults();
                     Toast.makeText(getApplicationContext(), "API Success", Toast.LENGTH_SHORT).show();
                 }else showError();
 
             }
 
             @Override
-            public void onFailure(Call<RestPokemonResponse> call, Throwable t) {
+            public void onFailure(Call<RestCountryResponse> call, Throwable t) {
                 showError();
             }
         });
