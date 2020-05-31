@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.example.nergizturgutapp.Constants;
 import com.example.nergizturgutapp.R;
+import com.example.nergizturgutapp.Singletons;
 import com.example.nergizturgutapp.data.PokeApi;
 import com.example.nergizturgutapp.presentation.controller.MainController;
 import com.example.nergizturgutapp.presentation.model.Pokemon;
@@ -45,10 +46,8 @@ public class MainActivity extends AppCompatActivity {
 
         controller = new MainController(
                 this,
-                new GsonBuilder()
-                        .setLenient()
-                    .create(),
-                getSharedPreferences("application.esiea", Context.MODE_PRIVATE)
+                Singletons.getGson(),
+                Singletons.getSharedPreferencesInstance(getApplicationContext())
         );
         controller.onStart();
     }
