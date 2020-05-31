@@ -1,4 +1,4 @@
-package com.example.nergizturgutapp;
+package com.example.nergizturgutapp.presentation.model;
 
 import java.util.List;
 

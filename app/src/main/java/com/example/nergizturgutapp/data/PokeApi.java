@@ -1,8 +1,9 @@
-package com.example.nergizturgutapp;
+package com.example.nergizturgutapp.data;
+
+import com.example.nergizturgutapp.presentation.model.RestPokemonResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
-import retrofit2.http.Query;
 
 public interface PokeApi {
 

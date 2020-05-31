@@ -1,4 +1,4 @@
-package com.example.nergizturgutapp;
+package com.example.nergizturgutapp.presentation.model;
 
 public class Pokemon {
     private String name;
